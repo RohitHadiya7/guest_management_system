@@ -161,7 +161,7 @@ export function TableCellViewer({ item, onGuestInvited }: TableCellViewerProps) 
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                                 <DialogTitle>Invite Guest</DialogTitle>
-                                <DialogDescription>Enter guest's email below to invite them.</DialogDescription>
+                                <DialogDescription>Enter guest&apos;s email below to invite them.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
