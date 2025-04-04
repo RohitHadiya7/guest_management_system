@@ -1,9 +1,10 @@
 import axios from 'axios'
 
 
-export const registerUser = async (email, password) => {
+export const registerUser = async (name, email, password) => {  
     try {
         const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/auth/register`, {
+            name,   
             email,
             password,
         })

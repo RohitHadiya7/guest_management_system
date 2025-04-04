@@ -1,10 +1,19 @@
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <>
-      <h1 className="text-3xl">guest management system</h1>
-      
-    </>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  }, [router]);
+
+  return null
 }

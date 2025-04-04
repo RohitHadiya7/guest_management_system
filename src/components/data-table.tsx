@@ -110,17 +110,14 @@ function DragHandle({ id }: { id: string }) {
   )
 }
 
-
 interface ActionProps {
   row: Row<z.infer<typeof eventSchema>>
   onEventUpdated: () => void
   fetchEvents: () => void
-  setOpenUpdateDrawer: (eventId: string | null) => void 
+  setOpenUpdateDrawer: (eventId: string | null) => void
 }
 
 const Actions: React.FC<ActionProps> = ({ row, onEventUpdated, fetchEvents, setOpenUpdateDrawer }) => {
-
-
   const handleDelete = async () => {
     const eventId = row.original._id
     const token = localStorage.getItem("jwt")
@@ -133,7 +130,7 @@ const Actions: React.FC<ActionProps> = ({ row, onEventUpdated, fetchEvents, setO
     try {
       await deleteEvent(eventId, token)
       toast.success("Event deleted successfully!")
-      fetchEvents() 
+      fetchEvents()
     } catch (error: any) {
       console.error("Error deleting event:", error)
       toast.error(error.message || "Failed to delete event.")
@@ -164,67 +161,6 @@ const Actions: React.FC<ActionProps> = ({ row, onEventUpdated, fetchEvents, setO
     </>
   )
 }
-
-
-const columns: ColumnDef<z.infer<typeof eventSchema>>[] = [
-  {
-    id: "drag",
-    header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original._id} />,
-  },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-  checked={
-    table.getIsAllPageRowsSelected()
-      ? true
-      : table.getIsSomePageRowsSelected()
-      ? "indeterminate"
-      : false
-  }
-  onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  aria-label="Select all"
-/>
-
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Event Name",
-    cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
-    },
-    enableHiding: false,
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-  },
-  {
-    accessorKey: "time",
-    header: "Time",
-  },
-  {
-    accessorKey: "location",
-    header: "Location",
-  },
-
-  
-]
 
 function DraggableRow({ row }: { row: Row<z.infer<typeof eventSchema>> }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
@@ -271,7 +207,6 @@ export function DataTable({ userId }: DataTableProps) {
     useSensor(TouchSensor, {})
   )
 
-  
   const [eventIdToUpdate, setEventIdToUpdate] = React.useState<string | null>(null)
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
@@ -287,29 +222,97 @@ export function DataTable({ userId }: DataTableProps) {
 
     try {
       const eventsData = await getEvents(userId)
-      setData(eventsData) 
+      setData(eventsData)
     } catch (error) {
       console.error("Error fetching events:", error)
     }
   }
 
-  const tableColumns = React.useMemo(() => [
-    ...columns,
+  // Create a function that generates the columns with access to fetchEvents
+  const getColumns = (fetchEventsCallback: () => void): ColumnDef<z.infer<typeof eventSchema>>[] => [
     {
-      id: "actions",
-      cell: ({ row }) => {
-        
-        return (
-          <Actions
-            row={row}
-            onEventUpdated={fetchEvents}
-            fetchEvents={fetchEvents}
-            setOpenUpdateDrawer={setEventIdToUpdate} 
-          />
-        )
-      },
+      id: "drag",
+      header: () => null,
+      cell: ({ row }) => <DragHandle id={row.original._id} />,
     },
-  ], [fetchEvents])
+    {
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected()
+                ? true
+                : table.getIsSomePageRowsSelected()
+                  ? "indeterminate"
+                  : false
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: "Event Name",
+      cell: ({ row }) => {
+        return <TableCellViewer item={row.original} onGuestInvited={fetchEventsCallback} />
+      },
+      enableHiding: false,
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => {
+        const date = new Date(row.original.date);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const year = date.getFullYear();
+        return <span>{`${day}-${month}-${year}`}</span>;
+      }
+    },
+    {
+      accessorKey: "time",
+      header: "Time",
+    },
+    {
+      accessorKey: "location",
+      header: "Location",
+    },
+  ];
+
+  // Use the function to create the columns, passing fetchEvents as a parameter
+  const tableColumns = React.useMemo(() => {
+    const baseColumns = getColumns(fetchEvents);
+    return [
+      ...baseColumns,
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          return (
+            <Actions
+              row={row}
+              onEventUpdated={fetchEvents}
+              fetchEvents={fetchEvents}
+              setOpenUpdateDrawer={setEventIdToUpdate}
+            />
+          )
+        },
+      },
+    ];
+  }, [fetchEvents]);
 
   const table = useReactTable({
     data,
@@ -335,8 +338,6 @@ export function DataTable({ userId }: DataTableProps) {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
-
-
 
   React.useEffect(() => {
     fetchEvents()
@@ -375,7 +376,7 @@ export function DataTable({ userId }: DataTableProps) {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="cursor-pointer">
                 <IconLayoutColumns />
                 <span className="hidden lg:inline">Customize Columns</span>
                 <span className="lg:hidden">Columns</span>
@@ -453,10 +454,10 @@ export function DataTable({ userId }: DataTableProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      
                       className="h-24 text-center"
                     >
-                      No Events Sheduled
+                      No Events Scheduled
                     </TableCell>
                   </TableRow>
                 )}
@@ -558,14 +559,14 @@ export function DataTable({ userId }: DataTableProps) {
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
 
-       {eventToUpdate && (  
-          <UpdateEventDrawer
-            item={eventToUpdate}
-            open={!!eventIdToUpdate} 
-            setOpen={(open) => setEventIdToUpdate(open ? eventIdToUpdate : null)} 
-            onEventUpdated={handleEventCreated}
-          />
-        )}
+      {eventToUpdate && (
+        <UpdateEventDrawer
+          item={eventToUpdate}
+          open={!!eventIdToUpdate}
+          setOpen={(open) => setEventIdToUpdate(open ? eventIdToUpdate : null)}
+          onEventUpdated={handleEventCreated}
+        />
+      )}
     </Tabs>
   )
 }

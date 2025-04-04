@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { AlertCircle } from "lucide-react"
 import {
   Card,
@@ -36,9 +37,10 @@ export function LoginForm({
       if (data && data.accessToken) {
         localStorage.setItem("jwt", data.accessToken)
         localStorage.setItem("userId", data.userId)
+        localStorage.setItem("username", data.name)
         setError(null) 
 
-        
+        toast.success("Login Successful! Redirecting to Dashboard...")
         router.push('/dashboard')
       } else {
         setError("Login failed. Invalid response from server.")

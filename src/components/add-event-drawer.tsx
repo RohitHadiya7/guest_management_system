@@ -111,7 +111,7 @@ export function AddEventDrawer({ userId, onEventCreated }: AddEventDrawerProps) 
         return (
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="cursor-pointer">
                         <IconPlus />
                         <span className="hidden lg:inline">Add Event</span>
                     </Button>
@@ -123,8 +123,8 @@ export function AddEventDrawer({ userId, onEventCreated }: AddEventDrawerProps) 
                     </DialogHeader>
                     {renderFormContent()}
                     <div className="flex justify-end gap-2 pt-6">
-                        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-                        <Button type="button" onClick={handleCreateEvent}>Create Event</Button>
+                        <Button className="cursor-pointer" type="button" variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
+                        <Button className="cursor-pointer" type="button" onClick={handleCreateEvent}>Create Event</Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -134,7 +134,7 @@ export function AddEventDrawer({ userId, onEventCreated }: AddEventDrawerProps) 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button className="cursor-pointer" variant="outline" size="sm">
                     <IconPlus />
                     <span className="hidden lg:inline">Add Event</span>
                 </Button>
@@ -146,9 +146,9 @@ export function AddEventDrawer({ userId, onEventCreated }: AddEventDrawerProps) 
                 </DrawerHeader>
                 {renderFormContent()}
                 <DrawerFooter className="pt-2">
-                    <Button onClick={handleCreateEvent} className="mb-2">Create Event</Button>
+                    <Button onClick={handleCreateEvent} className="mb-2 cursor-pointer">Create Event</Button>
                     <DrawerClose asChild>
-                        <Button variant="secondary">Cancel</Button>
+                        <Button className="cursor-pointer" variant="secondary">Cancel</Button>
                     </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>
