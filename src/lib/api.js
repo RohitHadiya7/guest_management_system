@@ -1,10 +1,9 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.APP_API_BASE_URL
 
 export const registerUser = async (email, password) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/auth/register`, {
             email,
             password,
         })
@@ -12,10 +11,10 @@ export const registerUser = async (email, password) => {
     } catch (error) {
         if (error.response) {
             console.error('API Error:', error.response.status, error.response.data)
-            throw new Error(error.response.data.message || 'Registration failed') 
+            throw new Error(error.response.data.message || 'Registration failed')
         } else if (error.request) {
             console.error('API Error: No response received', error.request)
-            throw new Error('Network error. Please try again.') 
+            throw new Error('Network error. Please try again.')
         } else {
             console.error('API Error:', error.message)
             throw new Error('An unexpected error occurred.')
@@ -25,13 +24,13 @@ export const registerUser = async (email, password) => {
 
 export const loginUser = async (email, password) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/auth/login`, {
             email,
             password,
         })
         return response.data
     } catch (error) {
-        
+
         if (error.response) {
             console.error('API Error:', error.response.status, error.response.data)
             throw new Error(error.response.data.message || 'Login failed')
@@ -48,7 +47,7 @@ export const loginUser = async (email, password) => {
 export const createEvent = async (name, date, time, location, token) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/events`,
+            `${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events`,
             {
                 name,
                 date,
@@ -63,7 +62,7 @@ export const createEvent = async (name, date, time, location, token) => {
         )
         return response.data
     } catch (error) {
-        
+
         if (error.response) {
             console.error('API Error:', error.response.status, error.response.data)
             throw new Error(error.response.data.message || 'Event creation failed')
@@ -79,15 +78,15 @@ export const createEvent = async (name, date, time, location, token) => {
 
 export const getEvents = async (userId) => {
     try {
-        const token = localStorage.getItem("jwt") 
-        const response = await axios.get(`${API_BASE_URL}/events`, {
+        const token = localStorage.getItem("jwt")
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events`, {
             headers: {
-                Authorization: `Bearer ${token}`, 
+                Authorization: `Bearer ${token}`,
             },
         })
         return response.data
     } catch (error) {
-        
+
         if (error.response) {
             console.error("API Error:", error.response.status, error.response.data)
             throw new Error(error.response.data.message || "Failed to fetch events")
@@ -104,7 +103,7 @@ export const getEvents = async (userId) => {
 
 export const updateEvent = async (eventId, token, updatedEventData) => {
     try {
-        const response = await axios.put(`${API_BASE_URL}/events/${eventId}`, updatedEventData, {
+        const response = await axios.put(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/${eventId}`, updatedEventData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -126,7 +125,7 @@ export const updateEvent = async (eventId, token, updatedEventData) => {
 
 export const deleteEvent = async (eventId, token) => {
     try {
-        const response = await axios.delete(`${API_BASE_URL}/events/${eventId}`, {
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/${eventId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -149,7 +148,7 @@ export const deleteEvent = async (eventId, token) => {
 
 export const getGuests = async (eventId, token) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/events/${eventId}/guests`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/${eventId}/guests`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -172,7 +171,7 @@ export const getGuests = async (eventId, token) => {
 
 export const inviteGuest = async (inviteData, token) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/events/guests`, inviteData, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/guests`, inviteData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -196,10 +195,10 @@ export const inviteGuest = async (inviteData, token) => {
 
 export const rsvpGuest = async (token, rsvpStatus) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/events/rsvp/${token}`, { rsvpStatus: rsvpStatus })
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/rsvp/${token}`, { rsvpStatus: rsvpStatus })
         return response.data
     } catch (error) {
-        
+
         if (error.response) {
             console.error("API Error:", error.response.status, error.response.data)
             throw new Error(error.response.data.message || "Failed to update RSVP status")
@@ -216,10 +215,10 @@ export const rsvpGuest = async (token, rsvpStatus) => {
 
 export const getRsvpPage = async (token) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/events/rsvp/${token}`)
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_API_BASE_URL}/events/rsvp/${token}`)
         return response.data
     } catch (error) {
-        
+
         if (error.response) {
             console.error("API Error:", error.response.status, error.response.data)
             throw new Error(error.response.data.message || "Failed to fetch RSVP details")
